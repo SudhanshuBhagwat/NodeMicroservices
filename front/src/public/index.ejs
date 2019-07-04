@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <title>Sample</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Microservices in Node</h1>
+
+            <h2 class="mt-4">Users Service</h2>
+            <div class="container mt-4">
+                <form class="form-inline">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="text" class="form-control" id="user" placeholder="Username">
+                    </div>
+                    <button id="regUser" class="btn btn-primary mb-2">Register User</button>
+                    <button id="getUsers" class="btn btn-primary mb-2 ml-2">Get All Users</button>
+                </form>
+                <div class="alert alert-primary" role="alert" id="userAlert"></div>
+                <ul class="list-group" id="userList"></ul>
+            </div>
+            <h2 class="mt-4">Songs Service</h2>
+            <div class="container mt-4">
+                <form class="form-inline">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="text" class="form-control" id="song" placeholder="Song name">
+                    </div>
+                    <button id="regSong" class="btn btn-primary mb-2">Register Song</button>
+                    <button id="getSongs" class="btn btn-primary mb-2 ml-2">Get All Songs</button>
+                </form>
+                <div class="alert alert-primary" role="alert" id="songAlert"></div>
+                <ul class="list-group" id="songList"></ul>
+            </div>
+        </div>
+        <script>
+            let regSong = document.getElementById('regSong');
+            let regUser = document.getElementById('regUser');
+            let getSongs = document.getElementById('getSongs');
+            let getUsers = document.getElementById('getUsers');
+            let user = document.getElementById('user');
+            let song = document.getElementById('song');
+            let userAlert = document.getElementById('userAlert');
+            let songAlert = document.getElementById('songAlert');
+            let songList = document.getElementById('songList');
+            let userList = document.getElementById('userList');
+
+            regSong.addEventListener('click', (e) => {
+                e.preventDefault();
+                songList.innerHTML = '';
+                fetch('http://localhost/api/v1/songs', {
+                    method: 'POST',
+                    body: JSON.stringify({name: user.value}),
+                    headers:{
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(response => songAlert.innerHTML = `New song ${response.name} created`)
+                .catch(err => { throw err })
+            })
+
+            regUser.addEventListener('click', (e) => {
+                e.preventDefault();
+                userList.innerHTML = '';
+                fetch('http://localhost/api/v1/users', {
+                    method: 'POST',
+                    body: JSON.stringify({name: user.value}),
+                    headers:{
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(response => userAlert.innerHTML = `New user ${response.name} created`)
+                .catch(err => { throw err })
+            })
+
+            getSongs.addEventListener('click', (e) => {
+                e.preventDefault();
+                songAlert.innerHTML = '';
+                fetch('http://localhost/api/v1/songs')
+                .then(res => res.json())
+                .then(response => {
+                    response.forEach(element => {
+                        var node = document.createElement("li"); 
+                        var textnode = document.createTextNode(`Song name: ${element.name}`);
+                        songList.appendChild(textnode);  
+                    });
+                })
+                .catch(err => { throw err })
+            })
+
+            getUsers.addEventListener('click', (e) => {
+                e.preventDefault();
+                userAlert.innerHTML = '';
+                fetch('http://localhost/api/v1/users')
+                .then(res => res.json())
+                .then(response => {
+                    response.forEach(element => {
+                        var node = document.createElement("li"); 
+                        var textnode = document.createTextNode(`Username: ${element.name}`);
+                        userList.appendChild(textnode);  
+                    });
+                })
+                .catch(err => { throw err })
+            })
+        </script>
+    </body>
+</html>
